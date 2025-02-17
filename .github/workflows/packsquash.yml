@@ -29,8 +29,14 @@ jobs:
             # optifine対応
             allow_mods = ['OptiFine']
 
+      - name: Set release tag
+        id: tag
+        run: |
+          echo "RELEASE_TAG=$(date +%Y%m%d)_${GITHUB_RUN_NUMBER}" >> $GITHUB_ENV
+          echo "Generated tag: $RELEASE_TAG"
+
       - name: Tag and create release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: action-v${{ github.run_number }}
+          tag_name: ${{ env.RELEASE_TAG }}
           files: /tmp/pack.zip
