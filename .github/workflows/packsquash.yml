@@ -1,0 +1,36 @@
+name: Optimize resource pack
+on: [push]
+permissions:
+  contents: write
+jobs:
+  packsquash:
+    name: Optimize resource pack
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run PackSquash
+        uses: ComunidadAylas/PackSquash-action@v4
+        with:
+          packsquash_version: latest
+          options: |
+            pack_directory = 'pack'
+            output_file_path = '/tmp/pack.zip'
+
+            # 圧縮効率の調整
+            recompress_compressed_files = true  #default: false
+            zip_compression_iterations = 2  # 0-255
+
+            # Minecraft互換性の確保
+            automatic_minecraft_quirks_detection = true
+
+            # optifine対応
+            allow_mods = ['OptiFine']
+
+      - name: Tag and create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: action-v${{ github.run_number }}
+          files: /tmp/pack.zip
